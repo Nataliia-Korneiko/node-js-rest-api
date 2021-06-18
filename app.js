@@ -12,8 +12,6 @@ dotenv.config();
 const app = express();
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
-// app.use(logger(formatsLogger));
-
 const accessLogStream = fs.createWriteStream(
   path.join(__dirname, 'access.log'),
   { flags: 'a' }
@@ -35,14 +33,14 @@ app.use((req, res, _next) => {
   });
 });
 
-app.use((err, _req, res, _next) => {
-  const status = err.status ? err.status : httpCode.INTERNAL_SERVER_ERROR;
+app.use((error, _req, res, _next) => {
+  const status = error.status ? error.status : httpCode.INTERNAL_SERVER_ERROR;
 
   res.status(status).json({
     status: status === 500 ? 'fail' : 'error',
     code: status,
-    message: err.message,
-    data: status === 500 ? 'Internal Server Error' : err.data,
+    message: error.message,
+    data: status === 500 ? 'Internal Server Error' : error.data,
   });
 });
 
