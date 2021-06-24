@@ -4,8 +4,13 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const contactsRouter = require('./routes/api/contacts');
+const usersRouter = require('./routes/api/users');
 const { httpCode } = require('./helpers/constants');
+const { ErrorHandler } = require('./helpers/constants');
+const { apiLimit, jsonLimit } = require('./config/rate-limit.json');
 
 dotenv.config();
 
@@ -17,12 +22,30 @@ const accessLogStream = fs.createWriteStream(
   { flags: 'a' }
 );
 
+app.use(helmet());
+app.use(cors());
+app.use(express.json({ limit: jsonLimit }));
 app.use(logger('combined', { stream: accessLogStream }, formatsLogger));
 
-app.use(cors());
-app.use(express.json());
+app.use(
+  '/api/',
+  rateLimit({
+    windowMs: apiLimit.windowMs,
+    max: apiLimit.max,
+
+    handler: (req, res, next) => {
+      next(
+        new ErrorHandler(
+          httpCode.BAD_REQUEST,
+          'Вы исчерпали количество запросов'
+        )
+      );
+    },
+  })
+);
 
 app.use('/api/contacts', contactsRouter);
+app.use('/api/users', usersRouter);
 
 app.use((req, res, _next) => {
   res.status(httpCode.NOT_FOUND).json({

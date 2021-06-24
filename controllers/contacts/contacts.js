@@ -1,11 +1,12 @@
-const { contact: service } = require('../../services');
+const { contactService: service } = require('../../services');
 const { httpCode } = require('../../helpers/constants');
 
 const getContacts = async (req, res, _next) => {
+  const userId = req.user.id;
   const { query } = req;
 
   try {
-    const contacts = await service.getContacts(query);
+    const contacts = await service.getContacts(userId, query);
 
     if (!contacts) {
       return res.status(httpCode.NOT_FOUND).json({
@@ -28,10 +29,11 @@ const getContacts = async (req, res, _next) => {
 };
 
 const getContactById = async (req, res, _next) => {
+  const userId = req.user.id;
   const { contactId: id } = req.params;
 
   try {
-    const contact = await service.getContactById(id);
+    const contact = await service.getContactById(userId, id);
 
     if (!contact) {
       return res.status(httpCode.NOT_FOUND).json({
@@ -54,11 +56,15 @@ const getContactById = async (req, res, _next) => {
 };
 
 const addContact = async (req, res, _next) => {
-  const { body } = req;
-  const { name, email, phone } = body;
+  const userId = req.user.id;
+  const {
+    body,
+    body: { name, email, phone },
+  } = req;
 
   try {
-    const contact = await service.addContact(body);
+    // const contact = await service.addContact({ owner: userId, body });
+    const contact = await service.addContact({ ...body, owner: userId });
 
     if (!name || !email || !phone) {
       return res.status(httpCode.BAD_REQUEST).json({
@@ -81,10 +87,11 @@ const addContact = async (req, res, _next) => {
 };
 
 const removeContact = async (req, res, _next) => {
+  const userId = req.user.id;
   const { contactId: id } = req.params;
 
   try {
-    const contact = await service.removeContact(id);
+    const contact = await service.removeContact(userId, id);
 
     if (!contact) {
       return res.status(httpCode.NOT_FOUND).json({
@@ -108,21 +115,14 @@ const removeContact = async (req, res, _next) => {
 };
 
 const updateContact = async (req, res, _next) => {
+  const userId = req.user.id;
   const { contactId: id } = req.params;
   const { body } = req;
 
   try {
-    const contact = await service.updateContact(id, body);
+    const contact = await service.updateContact(userId, id, body);
 
-    if (!contact) {
-      return res.status(httpCode.NOT_FOUND).json({
-        status: 'error',
-        code: httpCode.NOT_FOUND,
-        message: 'Not Found',
-      });
-    }
-
-    if (!id) {
+    if (!contact || !id) {
       return res.status(httpCode.NOT_FOUND).json({
         status: 'error',
         code: httpCode.NOT_FOUND,
@@ -144,11 +144,12 @@ const updateContact = async (req, res, _next) => {
 };
 
 const updateStatusContact = async (req, res, next) => {
+  const userId = req.user.id;
   const { contactId: id } = req.params;
   const { favorite } = req.body;
 
   try {
-    const contact = await service.updateStatusContact(id, favorite);
+    const contact = await service.updateStatusContact(userId, id, favorite);
 
     if (!contact) {
       return res.status(httpCode.NOT_FOUND).json({
