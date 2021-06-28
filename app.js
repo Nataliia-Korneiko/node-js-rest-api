@@ -37,7 +37,7 @@ app.use(
       next(
         new ErrorHandler(
           httpCode.BAD_REQUEST,
-          'Вы исчерпали количество запросов'
+          'You have reached your request limit. Try later!'
         )
       );
     },

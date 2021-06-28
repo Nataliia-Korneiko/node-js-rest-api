@@ -10,18 +10,12 @@ const SECRET_KEY = process.env.JWT_SECRET_KEY;
 const params = {
   secretOrKey: SECRET_KEY,
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  passReqToCallback: true,
 };
 
 passport.use(
   new Strategy(params, async (payload, done) => {
-    console.log('payload.id:', payload.id);
-    console.log('done:', done);
-
     try {
       const user = await service.getUserById(payload.id);
-
-      console.log('payload.id:', payload.id);
 
       if (!user) {
         return done(new Error('User not found'));

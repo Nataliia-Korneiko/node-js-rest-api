@@ -1,10 +1,17 @@
-const { signup, login, logout, getCurrentUser } = require('./users');
+const {
+  signup,
+  login,
+  logout,
+  getCurrentUser,
+  updateSubscription,
+} = require('./users');
 
 const users = {
   signup,
   login,
   logout,
   getCurrentUser,
+  updateSubscription,
 };
 
 module.exports = users;

@@ -63,7 +63,6 @@ const addContact = async (req, res, _next) => {
   } = req;
 
   try {
-    // const contact = await service.addContact({ owner: userId, body });
     const contact = await service.addContact({ ...body, owner: userId });
 
     if (!name || !email || !phone) {

@@ -16,8 +16,10 @@ const schemaSignup = Joi.object({
 const schemaLogin = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
-  // token: Joi.string().token().required(),
-  // token: Joi.string().token().optional(),
+});
+
+const schemaUpdateSubscription = Joi.object({
+  subscription: Joi.any().valid('starter', 'pro', 'business').required(),
 });
 
 const validate = (schema, body, next) => {
@@ -40,4 +42,8 @@ module.exports.validateSignup = (req, _res, next) => {
 
 module.exports.validateLogin = (req, _res, next) => {
   return validate(schemaLogin, req.body, next);
+};
+
+module.exports.validateUpdateSubscription = (req, _res, next) => {
+  return validate(schemaUpdateSubscription, req.body, next);
 };

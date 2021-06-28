@@ -1,41 +1,46 @@
 const { Contact } = require('../models');
 
-const getContacts = async (
-  userId,
-  { page = 1, limit = 5, offset = 0, sortBy, sortByDesc, filter }
-) => {
+const getContacts = async (userId, query) => {
+  const params = { owner: userId };
+  const {
+    page = 1,
+    limit = 20,
+    favorite = null,
+    sortBy,
+    sortByDesc,
+    filter,
+  } = query;
+
   try {
-    const data = await Contact.paginate(
-      { owner: userId },
-      {
-        page,
-        limit,
-        offset,
-        sort: {
-          ...(sortBy ? { [`${sortBy}`]: 1 } : {}),
-          ...(sortByDesc ? { [`${sortByDesc}`]: -1 } : {}),
-        },
-        select: filter ? filter.split('|').join(' ') : '',
-        populate: {
-          path: 'owner',
-          select: 'name email subscription -_id',
-        },
-      }
-    );
+    if (favorite !== null) {
+      params.favorite = favorite;
+    }
+    const data = await Contact.paginate(params, {
+      page,
+      limit,
+      sort: {
+        ...(sortBy ? { [`${sortBy}`]: 1 } : {}),
+        ...(sortByDesc ? { [`${sortByDesc}`]: -1 } : {}),
+      },
+      select: filter ? filter.split('|').join(' ') : '',
+      populate: {
+        path: 'owner',
+        select: 'name email subscription -_id',
+      },
+    });
 
     const {
-      docs: contacts,
       totalDocs: total,
-      page: pageNumber,
-      totalPages: allPages,
+      totalPages,
+      page: currentPage,
+      docs: contacts,
     } = data;
 
     return {
       total: Number(total),
-      page: Number(pageNumber),
-      totalPages: Number(allPages),
-      limit,
-      offset,
+      limit: Number(limit),
+      totalPages: Number(totalPages),
+      currentPage: Number(currentPage),
       contacts,
     };
   } catch (error) {
@@ -43,7 +48,7 @@ const getContacts = async (
   }
 };
 
-const getContactById = async (id, userId) => {
+const getContactById = async (userId, id) => {
   try {
     const data = await Contact.findById({ _id: id, owner: userId }).populate({
       path: 'owner',
@@ -58,17 +63,21 @@ const getContactById = async (id, userId) => {
 const addContact = async (body) => {
   try {
     const newContact = await Contact.create(body);
+
     return newContact;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 
-const removeContact = async (id, userId) => {
+const removeContact = async (userId, id) => {
   try {
     const contact = await Contact.findByIdAndDelete({
-      _id: id,
       owner: userId,
+      _id: id,
+    }).populate({
+      path: 'owner',
+      select: 'name email subscription -_id',
     });
 
     return contact;
@@ -77,13 +86,16 @@ const removeContact = async (id, userId) => {
   }
 };
 
-const updateContact = async (id, userId, body) => {
+const updateContact = async (userId, id, body) => {
   try {
     const contact = await Contact.findByIdAndUpdate(
       { _id: id, owner: userId },
       { ...body },
       { new: true }
-    );
+    ).populate({
+      path: 'owner',
+      select: 'name email subscription -_id',
+    });
 
     return contact;
   } catch (error) {
@@ -91,13 +103,16 @@ const updateContact = async (id, userId, body) => {
   }
 };
 
-const updateStatusContact = async (id, userId, favorite) => {
+const updateStatusContact = async (userId, id, favorite) => {
   try {
     const contact = await Contact.findByIdAndUpdate(
       { _id: id, owner: userId },
       { favorite },
       { new: true }
-    );
+    ).populate({
+      path: 'owner',
+      select: 'name email subscription -_id',
+    });
     return contact;
   } catch (error) {
     throw new Error(error.message);

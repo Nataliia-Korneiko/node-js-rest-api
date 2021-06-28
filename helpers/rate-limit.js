@@ -11,7 +11,7 @@ const createAccountLimiter = rateLimit({
       status: 'error',
       code: httpCode.BAD_REQUEST,
       message:
-        'С вашего IP-адреса исчерпан лимит создания аккаунтов. Попробуйте позже!',
+        'Your IP address has reached the limit for creating accounts. Try later!',
     });
   },
 });

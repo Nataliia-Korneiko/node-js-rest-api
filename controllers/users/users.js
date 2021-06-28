@@ -59,13 +59,22 @@ const login = async (req, res, next) => {
 
   try {
     const user = await service.getUserByEmail(email);
-    const isValidPassport = await user.validPassword(password);
 
-    if (!user || !isValidPassport) {
+    if (!user) {
       return res.status(httpCode.UNAUTHORIZED).json({
         status: 'error',
         code: httpCode.UNAUTHORIZED,
         message: 'Invalid credentials',
+      });
+    }
+
+    const isValidPassport = await user.validPassword(password);
+
+    if (user.validPassword(password) === null || !isValidPassport) {
+      return res.status(httpCode.UNAUTHORIZED).json({
+        status: 'error',
+        code: httpCode.UNAUTHORIZED,
+        message: 'Invalid credentials!',
       });
     }
 
@@ -91,7 +100,8 @@ const logout = async (req, res, next) => {
 
   try {
     await service.updateToken(userId, null);
-    return res.status(httpCode.NO_CONTENT).json({
+
+    return res.status(httpCode.OK).json({
       status: 'success',
       code: httpCode.NO_CONTENT,
       message: 'Success logout',
@@ -119,9 +129,50 @@ const getCurrentUser = async (req, res, next) => {
     return res.status(httpCode.OK).json({
       status: 'success',
       code: httpCode.OK,
-      user: {
-        email: currentUser.email,
-        subscription: currentUser.subscription,
+      data: {
+        user: {
+          email: currentUser.email,
+          subscription: currentUser.subscription,
+        },
+      },
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const updateSubscription = async (req, res, next) => {
+  const userId = req.user.id;
+  const { subscription } = req.body;
+
+  try {
+    const user = await service.updateSubscription(userId, subscription);
+
+    if (!user) {
+      return res.status(httpCode.NOT_FOUND).json({
+        status: 'error',
+        code: httpCode.NOT_FOUND,
+        message: 'Not Found',
+      });
+    }
+
+    if (!subscription) {
+      return res.status(httpCode.NOT_FOUND).json({
+        status: 'error',
+        code: httpCode.NOT_FOUND,
+        message: 'Missing field subscription',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      code: 200,
+      message: 'Status contact updated',
+      data: {
+        user: {
+          email: user.email,
+          subscription: user.subscription,
+        },
       },
     });
   } catch (error) {
@@ -134,4 +185,5 @@ module.exports = {
   login,
   logout,
   getCurrentUser,
+  updateSubscription,
 };
