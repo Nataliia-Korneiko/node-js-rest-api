@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const { Schema } = mongoose;
+const { Schema, SchemaTypes } = require('mongoose');
 
 const contactSchema = new Schema(
   {
@@ -13,7 +12,10 @@ const contactSchema = new Schema(
       type: String,
       unique: true,
       required: [true, 'Set email for contact'],
-      validate: (value) => value.includes('@'),
+      validate(value) {
+        const re = /[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]+/;
+        return re.test(String(value).toLowerCase());
+      },
     },
     phone: {
       type: String,
@@ -23,6 +25,10 @@ const contactSchema = new Schema(
     favorite: {
       type: Boolean,
       default: false,
+    },
+    owner: {
+      type: SchemaTypes.ObjectId,
+      ref: 'user',
     },
   },
   { versionKey: false, timestamps: true }
