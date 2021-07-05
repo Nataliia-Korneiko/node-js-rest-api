@@ -4,6 +4,7 @@ const {
   logout,
   getCurrentUser,
   updateSubscription,
+  updateAvatar,
 } = require('./users');
 
 const users = {
@@ -12,6 +13,7 @@ const users = {
   logout,
   getCurrentUser,
   updateSubscription,
+  updateAvatar,
 };
 
 module.exports = users;
