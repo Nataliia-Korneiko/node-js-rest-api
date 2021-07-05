@@ -3,6 +3,8 @@ const router = express.Router();
 const { users: ctrl } = require('../../controllers');
 const guard = require('../../helpers/guard');
 const { createAccountLimiter } = require('../../helpers/rate-limit');
+const upload = require('../../helpers/upload');
+
 const {
   validateSignup,
   validateLogin,
@@ -14,5 +16,6 @@ router.post('/login', validateLogin, ctrl.login);
 router.post('/logout', guard, ctrl.logout);
 router.get('/current', guard, ctrl.getCurrentUser);
 router.patch('/', guard, validateUpdateSubscription, ctrl.updateSubscription);
+router.patch('/avatars', guard, upload.single('avatar'), ctrl.updateAvatar);
 
 module.exports = router;

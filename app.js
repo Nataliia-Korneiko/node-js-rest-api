@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
 const contactsRouter = require('./routes/api/contacts');
 const usersRouter = require('./routes/api/users');
 const { httpCode } = require('./helpers/constants');
-const { ErrorHandler } = require('./helpers/constants');
+const { ErrorHandler } = require('./helpers/error-handler');
 const { apiLimit, jsonLimit } = require('./config/rate-limit.json');
 
 dotenv.config();
@@ -26,6 +26,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json({ limit: jsonLimit }));
 app.use(logger('combined', { stream: accessLogStream }, formatsLogger));
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(
   '/api/',

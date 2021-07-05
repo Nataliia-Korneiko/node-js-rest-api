@@ -166,10 +166,10 @@ const updateStatusContact = async (req, res, next) => {
       });
     }
 
-    res.json({
+    res.status(httpCode.OK).json({
       status: 'success',
-      code: 200,
-      message: 'Status contact updated',
+      code: httpCode.OK,
+      message: 'Favorite Updated',
       data: {
         contact,
       },

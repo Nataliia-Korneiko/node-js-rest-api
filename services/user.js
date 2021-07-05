@@ -1,28 +1,60 @@
 const { User } = require('../models');
 
 const getUserByEmail = async (email) => {
-  return await User.findOne({ email });
+  try {
+    return await User.findOne({ email });
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const getUserById = async (id) => {
-  return await User.findOne({ _id: id });
+  try {
+    return await User.findOne({ _id: id });
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const addUser = async (body) => {
-  const user = new User(body);
-  return await user.save();
+  try {
+    const user = new User(body);
+    return await user.save();
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const updateToken = async (id, token) => {
-  return await User.updateOne({ _id: id }, { token });
+  try {
+    return await User.updateOne({ _id: id }, { token });
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const updateSubscription = async (id, subscription) => {
-  return await User.findByIdAndUpdate(
-    { _id: id },
-    { subscription },
-    { new: true }
-  );
+  try {
+    return await User.findByIdAndUpdate(
+      { _id: id },
+      { subscription },
+      { new: true }
+    );
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const updateAvatar = async (id, avatarURL, idCloudAvatar) => {
+  try {
+    return await User.updateOne(
+      { _id: id },
+
+      { avatarURL, idCloudAvatar }
+    );
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const userService = {
@@ -31,6 +63,7 @@ const userService = {
   addUser,
   updateToken,
   updateSubscription,
+  updateAvatar,
 };
 
 module.exports = userService;
