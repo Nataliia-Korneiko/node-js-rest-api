@@ -1,7 +1,7 @@
 const { contactService: service } = require('../../services');
 const { httpCode } = require('../../helpers/constants');
 
-const getContacts = async (req, res, _next) => {
+const getContacts = async (req, res, next) => {
   const userId = req.user.id;
   const { query } = req;
 
@@ -28,7 +28,7 @@ const getContacts = async (req, res, _next) => {
   }
 };
 
-const getContactById = async (req, res, _next) => {
+const getContactById = async (req, res, next) => {
   const userId = req.user.id;
   const { contactId: id } = req.params;
 
@@ -55,7 +55,7 @@ const getContactById = async (req, res, _next) => {
   }
 };
 
-const addContact = async (req, res, _next) => {
+const addContact = async (req, res, next) => {
   const userId = req.user.id;
   const {
     body,
@@ -85,7 +85,7 @@ const addContact = async (req, res, _next) => {
   }
 };
 
-const removeContact = async (req, res, _next) => {
+const removeContact = async (req, res, next) => {
   const userId = req.user.id;
   const { contactId: id } = req.params;
 
@@ -113,7 +113,7 @@ const removeContact = async (req, res, _next) => {
   }
 };
 
-const updateContact = async (req, res, _next) => {
+const updateContact = async (req, res, next) => {
   const userId = req.user.id;
   const { contactId: id } = req.params;
   const { body } = req;
