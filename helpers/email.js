@@ -37,8 +37,8 @@ const createEmailTemplate = (verificationToken, name = 'Guest') => {
   return mailGenerator.generate(emailTemplate);
 };
 
-const sendEmail = (verificationToken, email) => {
-  const emailBody = createEmailTemplate(verificationToken);
+const sendEmail = (verificationToken, email, name) => {
+  const emailBody = createEmailTemplate(verificationToken, name);
 
   const msg = {
     to: email,

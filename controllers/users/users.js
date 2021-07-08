@@ -52,7 +52,7 @@ const signup = async (req, res, next) => {
       verificationToken,
     });
 
-    await sendEmail(verificationToken, email);
+    await sendEmail(verificationToken, email, name);
 
     res.status(httpCode.CREATED).json({
       status: 'success',
@@ -313,7 +313,7 @@ const resendEmail = async (req, res, next) => {
       });
     }
 
-    await sendEmail(user.verificationToken, user.email);
+    await sendEmail(user.verificationToken, user.email, user.name);
 
     res.status(httpCode.OK).json({
       status: 'success',
