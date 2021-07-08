@@ -47,14 +47,25 @@ const updateSubscription = async (id, subscription) => {
 
 const updateAvatar = async (id, avatarURL, idCloudAvatar) => {
   try {
-    return await User.updateOne(
-      { _id: id },
-
-      { avatarURL, idCloudAvatar }
-    );
+    return await User.updateOne({ _id: id }, { avatarURL, idCloudAvatar });
   } catch (error) {
     throw new Error(error.message);
   }
+};
+
+const getUserByVerificationToken = async (verificationToken) => {
+  try {
+    return await User.findOne({ verificationToken });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+const updateVerificationToken = async (id, verify, verificationToken) => {
+  return await User.findByIdAndUpdate(
+    { _id: id },
+    { verify, verificationToken }
+  );
 };
 
 const userService = {
@@ -64,6 +75,8 @@ const userService = {
   updateToken,
   updateSubscription,
   updateAvatar,
+  getUserByVerificationToken,
+  updateVerificationToken,
 };
 
 module.exports = userService;
